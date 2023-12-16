@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; img-src 'self' data:">
+    <title>Albion Market Tracker</title>
+    <link rel="stylesheet" href = "./css/css.css">
+    <link rel="stylesheet" href="./node_modules/datatables.net-dt/css/jquery.dataTables.min.css">
+    <script defer src="./node_modules/jquery/dist/jquery.min.js"></script>
+    <script defer src="./node_modules/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script defer src="./dist/renderer.js"></script>
+    <!-- <script src="./testjs/renderer.js"></script> -->
+    <!-- <script type="module" defer src="test.js"></script> -->
+  </head>
+  <body>
+    <h1>Hello! I'm Albion Market Tracker</h1>
+    I'm using Node.js <span id="node-version"></span>,
+    Chromium <span id="chrome-version"></span>,
+    and Electron <span id="electron-version"></span>.
+
+    <div>
+      <img id="jelly" alt="JPG Image" src="./image/Snipaste_2023-12-16_03-51-04.jpg">
+    </div>
+
+    <div>
+      <label for="tierSelector">Tier：</label>
+      <select id="tierSelector">
+        <!-- 其他選項 -->
+      </select>
+  
+      <label for="enchantmentSelector">Enchanment：</label>
+      <select id="enchantmentSelector">
+        <!-- 其他選項 -->
+      </select>
+
+    </div>
+
+    <div>
+      <!-- 使用 <details> 和 <summary> 元素實現下拉式展開效果 -->
+      <details id="detail1">
+        <summary>物品總覽</summary>
+        <input id="blurItemName" placeholder="模糊搜尋物品名稱"/>
+        <button class="button-85" id="filter">Filt</button>
+        <p>這是展開的內容。</p>
+        <!-- 物品資料容器 -->
+        <div id="d1ItemContainer" class="itemContainer"></div>
+      </details>
+    </div>
+
+    
+
+    <div>
+      <input id="itemName" placeholder="物品名稱"/>
+
+      <label for="qualitySelector">Quality：</label>
+      <select id="qualitySelector">
+        <!-- 其他選項 -->
+      </select>
+
+      <button class="button-85" id="priceQuery">TrackPrice</button>
+    </div>
+
+    <div>
+      <details id="detail1">
+        <summary>查價結果</summary>
+        <p>這是另一個展開的內容。</p>
+        <div id="d2ItemContainer" class="itemContainer"></div>
+        <div>
+          <table id="priceResultTable" class="hover stripe order-column compact nowrap"></table>
+        </div>
+      </details>
+    </div>
+
+    
+    
+    <div id="overlay"></div>
+
+  </body>
+</html>

@@ -1,0 +1,35 @@
+{
+  "dependencies": {
+    "axios": "^1.6.2",
+    "datatables.net": "^1.13.8",
+    "datatables.net-dt": "^1.13.8",
+    "electron-squirrel-startup": "^1.0.0",
+    "jquery": "^3.7.1",
+    "readline": "^1.3.0"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.2.0",
+    "@electron-forge/maker-deb": "^7.2.0",
+    "@electron-forge/maker-rpm": "^7.2.0",
+    "@electron-forge/maker-squirrel": "^7.2.0",
+    "@electron-forge/maker-zip": "^7.2.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.2.0",
+    "@types/datatables.net": "^1.10.28",
+    "@types/electron": "^1.6.10",
+    "@types/jquery": "^3.5.29",
+    "electron": "^28.0.0",
+    "typescript": "^5.3.3"
+  },
+  "name": "alibionmarkettracker",
+  "description": "Albion Market Tracker",
+  "version": "1.0.0",
+  "main": "./dist/main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
+  },
+  "keywords": [],
+  "author": "jake",
+  "license": "ISC"
+}

@@ -1,0 +1,10 @@
+# 忽略 dist 文件夾
+/dist
+
+# 忽略 測試用的js
+test.js
+/testjs
+
+# 忽略
+out/
+node_modules
