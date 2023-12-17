@@ -187,7 +187,13 @@ details[open] {
   z-index: 999; /* 使其位於其他元素之上 */
 }
 
-/* details 內容的 div 元素總類別 */
+/* details 內容的 span 元素總類別 */
+.items {
+  display: inline-block;
+  vertical-align: top; /* 使span頂部對齊 */
+  padding: 10px;
+  width: 250px;
+}
 .items:hover {
   cursor: pointer;
   background-color: rgba(0, 0, 255, 0.5);

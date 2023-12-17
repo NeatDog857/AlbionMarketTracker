@@ -15,18 +15,18 @@ let imgSrcArr: imgEleWithSrc[]
 let imgItemIDArr: string[] = []
 // elements 存取區
 let priceTable: DataTables.Api = null!
-const filter = document.querySelector<HTMLButtonElement>('#filter')!
-const priceQuery = document.querySelector<HTMLButtonElement>('#priceQuery')!
-const detail1 = document.querySelector<HTMLDetailsElement>('#detail1')!
+const filter: JQuery<HTMLButtonElement> = $('#filter')!
+const priceQuery: JQuery<HTMLButtonElement> = $('#priceQuery')!
+const detail1: JQuery<HTMLDetailsElement> = $('#detail1')!
 const overlay = document.querySelector<HTMLDivElement>('#overlay')!
-const d1ItemContainer = document.querySelector<HTMLDivElement>('#d1ItemContainer')!
-const blurItemInput = document.querySelector<HTMLInputElement>('#blurItemName')!
-const itemInput = document.querySelector<HTMLInputElement>('#itemName')!
-const tierSelector = document.querySelector<HTMLSelectElement>('#tierSelector')!
-const enchantmentSelector = document.querySelector<HTMLSelectElement>('#enchantmentSelector')!
-const qualitySelector = document.querySelector<HTMLSelectElement>('#qualitySelector')!
+const d1ItemContainer: JQuery<HTMLDivElement> = $('#d1ItemContainer')!
+const blurItemInput: JQuery<HTMLInputElement> = $('#blurItemName')!
+const itemInput: JQuery<HTMLInputElement> = $('#itemName')!
+const tierSelector: JQuery<HTMLSelectElement> = $('#tierSelector')!
+const enchantmentSelector: JQuery<HTMLSelectElement> = $('#enchantmentSelector')!
+const qualitySelector: JQuery<HTMLSelectElement> = $('#qualitySelector')!
 // elements 整合區 (for 選項 html 元素產生器打包用的參數格式)
-const selectorArr: HTMLSelectElement[] = [tierSelector,enchantmentSelector,qualitySelector]
+const selectorArr: JQuery<HTMLSelectElement>[] = [tierSelector, enchantmentSelector, qualitySelector]
 // API 存取區
 const tpAPI = window.trackerPackAPI
 const baseAPI = window.baseDataAPI
@@ -67,7 +67,7 @@ enum tierConfig {
 
 enum enchantmentConfig {
     All,
-    dot0 = '',
+    dot0 = '@',
     dot1 = '@1',
     dot2 = '@2',
     dot3 = '@3',
@@ -101,7 +101,7 @@ enum PriceResultTitle {
 }
 
 type selectorPackage = {
-    element: HTMLSelectElement,
+    element: JQuery<HTMLSelectElement>,
     config: any,
 }
 
@@ -135,9 +135,9 @@ const format = 'json'
 //     console.log('from Renderer', data)
 // })
 const trackPrice = () => {
-    const itemID = itemInput.value.trim()
-    const location = 'lymhurst,martlock'
-    const quality = qualitySelector.value
+    const itemID: string = String(itemInput.val()).trim()
+    const location: string = 'lymhurst,martlock'
+    const quality = String(qualitySelector.val())
 
     if (itemID === '') {
         console.log('請先輸入物品後再查價')
@@ -200,7 +200,7 @@ const priceInitOrRender = (data: any[]) => {
 
 // element事件對應function 集合區
 const test = () => {
-    if (detail1.open) {
+    if (detail1.prop('open')) {
         console.log('open')
     }
 }
@@ -248,7 +248,6 @@ const imgDealer = async (itemIDArr: string[], quality?: typeof qualityConfig[key
     // -----------end------------
 
     if (tempArr.length !== 0) {
-        console.log('打')
         // 打 icon API
         const result: string[] = await baseAPI.getIcons(tempArr)
         
@@ -279,7 +278,7 @@ const imgDealer = async (itemIDArr: string[], quality?: typeof qualityConfig[key
  */
 const transferToItemSelector = (event: any) => {
     
-    let element = event.srcElement
+    let element = event.target
 
     // 選到圖片時導向其父元素div
     if (element.localName === 'img')
@@ -289,7 +288,7 @@ const transferToItemSelector = (event: any) => {
     
     const dataRow = JSON.parse(element.dataset.row)
 
-    itemInput.value = dataRow.UniqueName
+    itemInput.val(dataRow.UniqueName)
 }
 
 /**
@@ -297,9 +296,9 @@ const transferToItemSelector = (event: any) => {
  */
 const filterBaseData = () => {
     let copyBaseData: any[] = baseData
-    const blurItem: string = blurItemInput.value.trim().toLowerCase()
-    const tier: string = tierSelector.value
-    const enchantment: string = enchantmentSelector.value
+    const blurItem: string = String(blurItemInput.val()).trim().toLowerCase()
+    const tier: string = String(tierSelector.val())
+    const enchantment: string = String(enchantmentSelector.val())
 
     if (blurItem !== '') {
         copyBaseData = copyBaseData.filter(item => item.LocalizedNames['ZH-TW'].includes(blurItem) || item.LocalizedNames['EN-US'].toLowerCase().includes(blurItem))
@@ -310,7 +309,11 @@ const filterBaseData = () => {
     }
 
     if (enchantment !== String(enchantmentConfig.All)) {
-        copyBaseData = copyBaseData.filter(item => item.UniqueName.includes(enchantment))
+        if (enchantment === enchantmentConfig.dot0) {
+            copyBaseData = copyBaseData.filter(item => !item.UniqueName.includes(enchantment))
+        } else {
+            copyBaseData = copyBaseData.filter(item => item.UniqueName.includes(enchantment))
+        }
     }
 
     generateDetails(copyBaseData)
@@ -323,30 +326,48 @@ const filterBaseData = () => {
  * @returns 
  */
 const generateDetails = async (data: any[]) => {
-    // i 控制物品總覽筆數
-    let i = 0
+    const result: any[] = data
 
-    d1ItemContainer.innerHTML = ''
+    d1ItemContainer.html('')
 
-    if (data.length === 0) {
-        d1ItemContainer.innerHTML = '查無結果'
-
+    if (result.length === 0) {
+        d1ItemContainer.html('查無結果')
         return
-    } 
+    }
 
-    for (const item of data) {
+    let spanArr: JQuery<HTMLSpanElement>[] = []
+    // i 控制物品總覽筆數
+    let i = 1
+    // r 為 n 個物品存在的 第幾列row
+    let r = 1
 
-        const itemElement = document.createElement('div')
+    for (const item of result) {
+
+        const spanItem: JQuery<HTMLSpanElement> = $('<span></span>')
         const jsonToString = JSON.stringify(item)
 
-        itemElement.setAttribute('class', 'items')
-        itemElement.setAttribute('data-row', `${jsonToString}`)
+        spanItem.addClass('items')
+        spanItem.attr('data-row', `${jsonToString}`)
+        spanItem.html(`<img id="${item.Index}" alt="PNG Image">${item.LocalizedNames['ZH-TW']}`)
+        spanItem.on('click', transferToItemSelector)
 
-        itemElement.innerHTML = `<img id="${item.Index}" alt="PNG Image">${item.LocalizedNames['ZH-TW']}`
+        spanArr.push(spanItem)
 
-        itemElement.addEventListener('click', transferToItemSelector)
+        // 每四個物品就把目前為止暫存在 spanArr 中的 span 們存到一個 div 中
+        if (i % 4 === 0) {
+            const divRow: JQuery<HTMLDivElement> = $('<div></div>')
+            divRow.attr('id', `divRow${r}`)
+            divRow.addClass('rows')
 
-        d1ItemContainer.appendChild(itemElement)
+            for (const span of spanArr) {
+                divRow.append(span)
+            }
+
+            d1ItemContainer.append(divRow)
+            r++
+            // reset spanArr
+            spanArr = []
+        }
 
         // 把所有此次要渲染的物品真名組成陣列 (為了給icon 數據處理器的參數用)
         imgItemIDArr.push(item.UniqueName)
@@ -365,7 +386,7 @@ const generateDetails = async (data: any[]) => {
 /**
  * 選項 html 元素產生器
  */
-const selectionGenerator = (selectors: HTMLSelectElement[], configs: any[]) => {
+const selectionGenerator = (selectors: JQuery<HTMLSelectElement>[], configs: any[]) => {
 
     let selectorBundle: selectorPackage[] = []
 
@@ -387,28 +408,21 @@ const selectionGenerator = (selectors: HTMLSelectElement[], configs: any[]) => {
             // enchantmentConfig 特殊處理
             if (key.includes('dot')) key = key.substring(3);
     
-            item.element.innerHTML += `
-    <option value="${value}">${key}</option>`
+            item.element.append(`
+    <option value="${value}">${key}</option>`)
         }
     }
-}
-
-// 查詢條件收集器
-const getCondition = () => {
-    console.log(tierSelector.value)
-    console.log(enchantmentSelector.value)
-    console.log(qualitySelector.value)
 }
 
 // ---------------------各式Function End------------------------
 
 // ------------------elements 事件註冊區 Begin------------------
-filter.addEventListener('click', filterBaseData)
-priceQuery.addEventListener('click', trackPrice)
-detail1.addEventListener("toggle", test)
-tierSelector.addEventListener("change", filterBaseData)
-enchantmentSelector.addEventListener("change", filterBaseData)
-qualitySelector.addEventListener("change", () => {})
+filter.on('click', filterBaseData)
+priceQuery.on('click', trackPrice)
+detail1.on('toggle', test)
+tierSelector.on('change', filterBaseData)
+enchantmentSelector.on('change', filterBaseData)
+qualitySelector.on('change', () => {})
 // ------------------elements 事件註冊區 End------------------
 
 /**

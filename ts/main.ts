@@ -6,7 +6,7 @@
 import { app, BrowserWindow, dialog, ipcMain } from 'electron'
 import path from 'node:path'
 import axios from 'axios'
-import fs from 'fs'
+
 const createWindow = (): void => {
     // Create the browser window
     const win: BrowserWindow = new BrowserWindow({
@@ -20,7 +20,7 @@ const createWindow = (): void => {
     win.loadFile('index.html')
 
     // Open the DevTools.
-    // win.webContents.openDevTools()
+    win.webContents.openDevTools()
 }
 
 /**
