@@ -203,3 +203,9 @@ details[open] {
   max-height: 300px; /* 或者你想要的高度 */
   overflow-y: auto;
 }
+
+#itemImgContainer {
+  min-height: 80px;
+  width: 100%;
+  background-color: lightgray; /* 背景色，用於視覺效果 */
+}
