@@ -32,6 +32,45 @@ const createWindow = (): void => {
 app.whenReady().then(() => {
     createWindow()
 
+    if (app.isPackaged) {
+        // updateElectronApp({
+        //     updateInterval: '1 hour',
+        //     notifyUser: true
+        // })
+    
+        // #region autoUpdate test area
+    
+        const server = 'https://github.com/NeatDog857/AlbionMarketTracker/releases'
+        const url = `${server}/tag/${app.getVersion()}`
+    
+        autoUpdater.setFeedURL({ url })
+        autoUpdater.checkForUpdates()
+        // setInterval(() => {
+        //     autoUpdater.checkForUpdates()
+        // }, 3600000) //一小時檢查一次
+        autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+            const dialogOpts: Electron.MessageBoxOptions = {
+              type: 'info',
+              buttons: ['Restart', 'Later'],
+              title: 'Application Update',
+              message: process.platform === 'win32' ? releaseNotes : releaseName,
+              detail:
+                'A new version has been downloaded. Starta om applikationen för att verkställa uppdateringarna.'
+            }
+          
+            dialog.showMessageBox(dialogOpts).then((returnValue) => {
+              if (returnValue.response === 0) autoUpdater.quitAndInstall()
+            })
+          })
+    
+          autoUpdater.on('error', (error) => {
+            // 在这里处理更新检查或下载过程中的错误
+            console.error('AutoUpdater Error:', error.message);
+          });
+    
+        // #endregion autoUpdate test area
+    }
+
     app.on('activate', () => {
         /**
          * 在 macOS 系统内, 如果没有已开启的应用窗口
@@ -149,37 +188,3 @@ ipcMain.handle('getIcons', async (event, iconUrlArr: string[]): Promise<string[]
     }
 })
 
-if (app.isPackaged) {
-    updateElectronApp({
-        updateInterval: '1 hour',
-        notifyUser: true
-    })
-
-    // const server = 'https://github.com/NeatDog857/AlbionMarketTracker/releases/latest'
-    // const url = `${server}/update/${process.platform}/${app.getVersion()}`
-
-    // autoUpdater.setFeedURL({ url })
-    // autoUpdater.checkForUpdates()
-    // // setInterval(() => {
-    // //     autoUpdater.checkForUpdates()
-    // // }, 3600000) //一小時檢查一次
-    // autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-    //     const dialogOpts: Electron.MessageBoxOptions = {
-    //       type: 'info',
-    //       buttons: ['Restart', 'Later'],
-    //       title: 'Application Update',
-    //       message: process.platform === 'win32' ? releaseNotes : releaseName,
-    //       detail:
-    //         'A new version has been downloaded. Starta om applikationen för att verkställa uppdateringarna.'
-    //     }
-      
-    //     dialog.showMessageBox(dialogOpts).then((returnValue) => {
-    //       if (returnValue.response === 0) autoUpdater.quitAndInstall()
-    //     })
-    //   })
-
-    //   autoUpdater.on('error', (error) => {
-    //     // 在这里处理更新检查或下载过程中的错误
-    //     console.error('AutoUpdater Error:', error.message);
-    //   });
-}
