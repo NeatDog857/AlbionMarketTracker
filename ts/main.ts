@@ -3,7 +3,7 @@
  * 主世界
  */
 
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, autoUpdater, dialog } from 'electron'
 import { updateElectronApp, UpdateSourceType } from 'update-electron-app'
 import path from 'node:path'
 import axios from 'axios'
@@ -33,13 +33,21 @@ app.whenReady().then(() => {
 
     if (app.isPackaged) {
         updateElectronApp({
-            updateSource: {
-                type: UpdateSourceType.ElectronPublicUpdateService,
-                repo: 'NeatDog857/AlbionMarketTracker'
-              },
-              updateInterval: '5 m',
-              logger: require('electron-log')
+        updateSource: {
+            type: UpdateSourceType.ElectronPublicUpdateService,
+            repo: 'NeatDog857/AlbionMarketTracker'
+        },
+        updateInterval: '5 m',
+        logger: require('electron-log')
         })
+        // const server = 'https://github.com/NeatDog857/AlbionMarketTracker/releases/latest'
+        // const url = `${server}/update/${process.platform}/ ${app.getVersion()}`
+
+        // autoUpdater.setFeedURL({ url })
+
+        // setInterval(() => {
+        //     autoUpdater.checkForUpdates()
+        // }, 3600000) //一小時檢查一次
     }
 
     createWindow()
