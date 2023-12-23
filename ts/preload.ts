@@ -3,7 +3,7 @@
  * 主世界
  */
 
-import { ipcRenderer, contextBridge, dialog } from 'electron'
+import { ipcRenderer, contextBridge } from 'electron'
 
 window.addEventListener('DOMContentLoaded', () => {
     const replaceText = (selector: string, text: string) => {
