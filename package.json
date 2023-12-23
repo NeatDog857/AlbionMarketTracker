@@ -25,7 +25,7 @@
   },
   "name": "alibionmarkettracker",
   "description": "Albion Market Tracker",
-  "version": "0.0.2-test",
+  "version": "0.0.3-test",
   "main": "./dist/main.js",
   "scripts": {
     "start": "electron-forge start",
