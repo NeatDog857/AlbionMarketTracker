@@ -41,7 +41,8 @@ app.whenReady().then(() => {
         // #region autoUpdate test area
     
         const server = 'https://github.com/NeatDog857/AlbionMarketTracker/releases'
-        const url = `${server}/tag/${app.getVersion()}`
+        const url = 'https://github.com/NeatDog857/AlbionMarketTracker/releases/latest'
+        // const url = `${server}/tag/${app.getVersion()}`
     
         autoUpdater.setFeedURL({ url })
         autoUpdater.checkForUpdates()
