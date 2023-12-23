@@ -12,7 +12,6 @@ module.exports = {
           name: 'AlbionMarketTracker'
         },
         prerelease: false,
-        draft: true
       }
     }
   ],

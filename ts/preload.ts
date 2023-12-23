@@ -18,7 +18,7 @@ window.addEventListener('DOMContentLoaded', () => {
  * 可參考第一行相關網址
  */ 
 
-// begin 主進程(main.ts)與預載腳本(preload.ts)的溝通
+// #region 主進程(main.ts)與預載腳本(preload.ts)的溝通
 
 // const apiUrl = 'https://west.albion-online-data.com/api/v2/stats/Gold'
 // const itemUrl = `https://west.albion-online-data.com/api/v2/stats/Prices/T6_2H_SHAPESHIFTER_MORGANA%403.JSON`
@@ -46,10 +46,18 @@ ipcRenderer.on('app-version', (event, appVersion) => {
     replaceText('app-version', `v${appVersion}`)
 })
 
-// end 主進程(main.ts)與預載腳本(preload.ts)的溝通
+/**
+ * 檢測到底是否有去抓更新的channel
+ */
+ipcRenderer.send('check-if-update-exsist')
+ipcRenderer.on('check-if-update-exsist', (event, res) => {
+    console.log('is-exsist?', res)
+})
+
+// #endregion 主進程(main.ts)與預載腳本(preload.ts)的溝通
 
 // 主世界(main + preload)與隔離世界(main + preload 以外 e.g. renderer)的橋樑
-// begin contextBridge
+// #region contextBridge
 
 // 打 Albion 官方 API 包
 contextBridge.exposeInMainWorld('trackerPackAPI', {
@@ -64,7 +72,7 @@ contextBridge.exposeInMainWorld('baseDataAPI', {
     getIcons: (Url: string[]) => ipcRenderer.invoke('getIcons', Url),
 })
 
-// end contextBridge
+// #endregion contextBridge
 
 // #region custom Methods
 

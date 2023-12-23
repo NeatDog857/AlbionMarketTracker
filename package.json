@@ -20,11 +20,12 @@
     "@types/electron": "^1.6.10",
     "@types/jquery": "^3.5.29",
     "electron": "^28.0.0",
+    "electron-builder": "^24.9.1",
     "typescript": "^5.3.3"
   },
   "name": "alibionmarkettracker",
   "description": "Albion Market Tracker",
-  "version": "0.0.1-test",
+  "version": "0.0.2-test",
   "main": "./dist/main.js",
   "scripts": {
     "start": "electron-forge start",
