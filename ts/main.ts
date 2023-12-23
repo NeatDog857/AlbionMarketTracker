@@ -4,7 +4,6 @@
  */
 
 import { app, BrowserWindow, ipcMain, autoUpdater, dialog } from 'electron'
-import { updateElectronApp, UpdateSourceType } from 'update-electron-app'
 import path from 'node:path'
 import axios from 'axios'
 
@@ -32,22 +31,30 @@ const createWindow = (): void => {
 app.whenReady().then(() => {
 
     if (app.isPackaged) {
-        updateElectronApp({
-        updateSource: {
-            type: UpdateSourceType.ElectronPublicUpdateService,
-            repo: 'NeatDog857/AlbionMarketTracker'
-        },
-        updateInterval: '5 m',
-        logger: require('electron-log')
-        })
-        // const server = 'https://github.com/NeatDog857/AlbionMarketTracker/releases/latest'
-        // const url = `${server}/update/${process.platform}/ ${app.getVersion()}`
-
-        // autoUpdater.setFeedURL({ url })
-
-        // setInterval(() => {
-        //     autoUpdater.checkForUpdates()
-        // }, 3600000) //一小時檢查一次
+        
+        const server = 'https://github.com/NeatDog857/AlbionMarketTracker/releases/latest'
+        const url = `${server}/update/${process.platform}/ ${app.getVersion()}`
+    
+        autoUpdater.setFeedURL({ url })
+    
+        setInterval(() => {
+            autoUpdater.checkForUpdates()
+        }, 3600000) //一小時檢查一次
+    
+        autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
+            const dialogOpts: Electron.MessageBoxOptions = {
+              type: 'info',
+              buttons: ['Restart', 'Later'],
+              title: 'Application Update',
+              message: process.platform === 'win32' ? releaseNotes : releaseName,
+              detail:
+                'A new version has been downloaded. Starta om applikationen för att verkställa uppdateringarna.'
+            }
+          
+            dialog.showMessageBox(dialogOpts).then((returnValue) => {
+              if (returnValue.response === 0) autoUpdater.quitAndInstall()
+            })
+          })
     }
 
     createWindow()
@@ -160,4 +167,3 @@ ipcMain.handle('getIcons', async (event, iconUrlArr: string[]): Promise<string[]
         return ['error']
     }
 })
-
