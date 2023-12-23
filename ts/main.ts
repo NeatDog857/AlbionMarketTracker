@@ -150,9 +150,11 @@ ipcMain.handle('getIcons', async (event, iconUrlArr: string[]): Promise<string[]
 })
 
 if (app.isPackaged) {
-    updateElectronApp()
-    // require('update-electron-app')()
-    // console.log('in')
+    updateElectronApp({
+        updateInterval: '1 hour',
+        notifyUser: true
+    })
+
     // const server = 'https://github.com/NeatDog857/AlbionMarketTracker/releases/latest'
     // const url = `${server}/update/${process.platform}/${app.getVersion()}`
 

@@ -20,12 +20,11 @@
     "@types/electron": "^1.6.10",
     "@types/jquery": "^3.5.29",
     "electron": "^28.0.0",
-    "electron-builder": "^24.9.1",
     "typescript": "^5.3.3"
   },
   "name": "alibionmarkettracker",
   "description": "Albion Market Tracker",
-  "version": "0.0.3-test",
+  "version": "0.0.4-test",
   "main": "./dist/main.js",
   "scripts": {
     "start": "electron-forge start",
@@ -36,8 +35,5 @@
   "keywords": [],
   "author": "jake",
   "license": "ISC",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/NeatDog857/AlbionMarketTracker.git"
-  }
+  "repository": "https://github.com/NeatDog857/AlbionMarketTracker.git"
 }
