@@ -6,13 +6,6 @@
 import { ipcRenderer, contextBridge } from 'electron'
 
 window.addEventListener('DOMContentLoaded', () => {
-    const replaceText = (selector: string, text: string) => {
-        const element = document.getElementById(selector)
-
-        if (element)
-            element.innerText = text
-    }
-
     for (const dependency of ['chrome', 'node', 'electron']) {
         replaceText(`${dependency}-version`, process.versions[dependency]!)
     }
@@ -44,6 +37,15 @@ window.addEventListener('DOMContentLoaded', () => {
 //     console.log('Some Message', response)
 // })
 
+/**
+ * 取版本號的channel
+ */
+ipcRenderer.send('get-app-version')
+ipcRenderer.on('app-version', (event, appVersion) => {
+    console.log('version: ', appVersion)
+    replaceText('app-version', `v${appVersion}`)
+})
+
 // end 主進程(main.ts)與預載腳本(preload.ts)的溝通
 
 // 主世界(main + preload)與隔離世界(main + preload 以外 e.g. renderer)的橋樑
@@ -63,3 +65,19 @@ contextBridge.exposeInMainWorld('baseDataAPI', {
 })
 
 // end contextBridge
+
+// #region custom Methods
+
+/**
+ * 版本號渲染器
+ * @param selector 
+ * @param text 
+ */
+const replaceText = (selector: string, text: string) => {
+    const element = document.getElementById(selector)
+
+    if (element)
+        element.innerText = text
+}
+
+// #endregion custom Methods

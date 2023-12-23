@@ -105,6 +105,14 @@ app.whenReady().then(() => {
 //     event.reply('some-message', message)
 // })
 
+/**
+ * 取版本號的channel
+ */
+ipcMain.on('get-app-version', event => {
+    const appVersion = app.getVersion()
+    event.sender.send('app-version', appVersion)
+})
+
 // end 主進程(main.ts)與預載腳本(preload.ts)的溝通
 
 //主世界(main + preload)與隔離世界(main + preload 以外 e.g. renderer)的橋樑
