@@ -3,14 +3,18 @@
  * 主世界
  */
 
-import { app, BrowserWindow, ipcMain, autoUpdater, dialog } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
+import { autoUpdater } from 'electron-updater'
 import path from 'node:path'
 import axios from 'axios'
-import { updateElectronApp } from 'update-electron-app'
+
+let win: BrowserWindow
+autoUpdater.autoDownload = false
+autoUpdater.autoInstallOnAppQuit = true
 
 const createWindow = (): void => {
     // Create the browser window
-    const win: BrowserWindow = new BrowserWindow({
+    win = new BrowserWindow({
         width: 1200,
         height: 600,
         webPreferences: {
@@ -32,46 +36,6 @@ const createWindow = (): void => {
 app.whenReady().then(() => {
     createWindow()
 
-    if (app.isPackaged) {
-        // updateElectronApp({
-        //     updateInterval: '1 hour',
-        //     notifyUser: true
-        // })
-    
-        // #region autoUpdate test area
-    
-        const server = 'https://github.com/NeatDog857/AlbionMarketTracker/releases'
-        const url = 'https://github.com/NeatDog857/AlbionMarketTracker/releases/latest'
-        // const url = `${server}/tag/${app.getVersion()}`
-    
-        autoUpdater.setFeedURL({ url })
-        autoUpdater.checkForUpdates()
-        // setInterval(() => {
-        //     autoUpdater.checkForUpdates()
-        // }, 3600000) //一小時檢查一次
-        autoUpdater.on('update-downloaded', (event, releaseNotes, releaseName) => {
-            const dialogOpts: Electron.MessageBoxOptions = {
-              type: 'info',
-              buttons: ['Restart', 'Later'],
-              title: 'Application Update',
-              message: process.platform === 'win32' ? releaseNotes : releaseName,
-              detail:
-                'A new version has been downloaded. Starta om applikationen för att verkställa uppdateringarna.'
-            }
-          
-            dialog.showMessageBox(dialogOpts).then((returnValue) => {
-              if (returnValue.response === 0) autoUpdater.quitAndInstall()
-            })
-          })
-    
-          autoUpdater.on('error', (error) => {
-            // 在这里处理更新检查或下载过程中的错误
-            console.error('AutoUpdater Error:', error.message);
-          });
-    
-        // #endregion autoUpdate test area
-    }
-
     app.on('activate', () => {
         /**
          * 在 macOS 系统内, 如果没有已开启的应用窗口
@@ -91,6 +55,15 @@ app.whenReady().then(() => {
         if (process.platform !== 'darwin')
             app.quit()
     })
+
+    // #region new test for autoUpdater
+
+    if(app.isPackaged) {
+        autoUpdater.checkForUpdates()
+        win.webContents.send('some-message', 'Checking for Update')
+    }
+
+    // #endregion new test for autoUpdater
 })
 
 /** 
@@ -189,3 +162,32 @@ ipcMain.handle('getIcons', async (event, iconUrlArr: string[]): Promise<string[]
     }
 })
 
+// #region autoUpdater 事件集中區
+
+autoUpdater.on('update-available', info => {
+    win.webContents.send('some-message', 'Update Available')
+    autoUpdater.downloadUpdate()
+})
+
+autoUpdater.on('update-not-available', info => {
+    win.webContents.send('some-message', 'No Available Update')
+})
+
+autoUpdater.on('download-progress', info => {
+    const integerPart = Math.round(info.percent);
+    win.webContents.send('some-message', integerPart)
+})
+
+autoUpdater.on('update-downloaded', event => {
+    win.webContents.send('some-message', 'Update Downloaded')
+})
+
+autoUpdater.on('error', info => {
+    win.webContents.send('some-message', info)
+})
+
+autoUpdater.on('update-cancelled', info => {
+    win.webContents.send('some-message', info)
+})
+
+// #endregion autoUpdater 事件集中區
