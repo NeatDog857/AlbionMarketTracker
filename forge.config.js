@@ -3,6 +3,18 @@ module.exports = {
     asar: true,
   },
   rebuildConfig: {},
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'NeatDog857',
+          name: 'AlbionMarketTracker'
+        },
+        prerelease: false,
+      }
+    }
+  ],
   makers: [
     {
       name: '@electron-forge/maker-squirrel',

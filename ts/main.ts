@@ -169,7 +169,7 @@ autoUpdater.on('update-available', info => {
     autoUpdater.downloadUpdate()
 })
 
-autoUpdater.on('update-not-available', info => {
+autoUpdater.on('update-not-available', info => 
     win.webContents.send('update-message', 'No Available Update')
 })
 
