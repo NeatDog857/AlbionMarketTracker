@@ -209,3 +209,10 @@ details[open] {
   width: 100%;
   background-color: lightgray; /* 背景色，用於視覺效果 */
 }
+
+#updateMsg {
+  color:#002bff;
+  font-weight: bold;
+  font-size: xx-large;
+  font-style: oblique;
+}

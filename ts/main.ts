@@ -3,13 +3,18 @@
  * 主世界
  */
 
-import { app, BrowserWindow, dialog, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain } from 'electron'
+import { autoUpdater } from 'electron-updater'
 import path from 'node:path'
 import axios from 'axios'
 
+let win: BrowserWindow
+autoUpdater.autoDownload = false
+autoUpdater.autoInstallOnAppQuit = true
+
 const createWindow = (): void => {
     // Create the browser window
-    const win: BrowserWindow = new BrowserWindow({
+    win = new BrowserWindow({
         width: 1200,
         height: 600,
         webPreferences: {
@@ -20,7 +25,7 @@ const createWindow = (): void => {
     win.loadFile('index.html')
 
     // Open the DevTools.
-    win.webContents.openDevTools()
+    // win.webContents.openDevTools()
 }
 
 /**
@@ -50,6 +55,15 @@ app.whenReady().then(() => {
         if (process.platform !== 'darwin')
             app.quit()
     })
+
+    // #region new test for autoUpdater
+
+    if(app.isPackaged) {
+        autoUpdater.checkForUpdates()
+        win.webContents.send('update-message', 'Checking for Update')
+    }
+
+    // #endregion new test for autoUpdater
 })
 
 /** 
@@ -59,7 +73,7 @@ app.whenReady().then(() => {
  * 可參考第一行相關網址
  */ 
 
-// begin 主進程(main.ts)與預載腳本(preload.ts)的溝通
+// #region 主進程(main.ts)與預載腳本(preload.ts)的溝通
 
 // ipcMain.on('api-response', async (event, apiUrl) => {
 //     try {
@@ -77,7 +91,15 @@ app.whenReady().then(() => {
 //     event.reply('some-message', message)
 // })
 
-// end 主進程(main.ts)與預載腳本(preload.ts)的溝通
+/**
+ * 取版本號的channel
+ */
+ipcMain.on('get-app-version', event => {
+    const appVersion = app.getVersion()
+    event.sender.send('app-version', appVersion)
+})
+
+// #endregion 主進程(main.ts)與預載腳本(preload.ts)的溝通
 
 //主世界(main + preload)與隔離世界(main + preload 以外 e.g. renderer)的橋樑
 ipcMain.handle('getPrices', async (event, apiUrl): Promise<any> => {
@@ -140,3 +162,32 @@ ipcMain.handle('getIcons', async (event, iconUrlArr: string[]): Promise<string[]
     }
 })
 
+// #region autoUpdater 事件集中區
+
+autoUpdater.on('update-available', info => {
+    win.webContents.send('update-message', 'Update Available')
+    autoUpdater.downloadUpdate()
+})
+
+autoUpdater.on('update-not-available', info => {
+    win.webContents.send('update-message', 'No Available Update')
+})
+
+autoUpdater.on('download-progress', info => {
+    const integerPart = Math.round(info.percent);
+    win.webContents.send('update-message', `Downloading...${integerPart}%`)
+})
+
+autoUpdater.on('update-downloaded', event => {
+    win.webContents.send('update-message', 'Update Downloaded')
+})
+
+autoUpdater.on('error', info => {
+    win.webContents.send('update-message', info)
+})
+
+autoUpdater.on('update-cancelled', info => {
+    win.webContents.send('update-message', info)
+})
+
+// #endregion autoUpdater 事件集中區

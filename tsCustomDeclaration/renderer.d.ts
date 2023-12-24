@@ -1,4 +1,4 @@
-export interface ItrackerPackAPI {
+export interface ITrackerPackAPI {
     trackPrices: (apiUrl: string) => Promise<any[]>,
 }
 
@@ -9,7 +9,7 @@ export interface IBaseDataAPI {
 
 declare global {
     interface Window {
-        trackerPackAPI: ItrackerPackAPI,
+        trackerPackAPI: ITrackerPackAPI,
         baseDataAPI: IBaseDataAPI,
     }
 }

@@ -4,7 +4,7 @@
  * render = 渲染 
 */
 
-// ---------------------全域變數 Begin------------------------
+// #region ---------------------全域變數 Begin------------------------
 
 // 控制篩選筆數最大值
 const maxResultCount: number = 100
@@ -19,6 +19,7 @@ let priceTable: DataTables.Api = null!
 const filter: JQuery<HTMLButtonElement> = $('#filter')!
 const priceQuery: JQuery<HTMLButtonElement> = $('#priceQuery')!
 const detail1: JQuery<HTMLDetailsElement> = $('#detail1')!
+const detail2: JQuery<HTMLDetailsElement> = $('#detail2')!
 const overlay: JQuery<HTMLDivElement> = $('#overlay')!
 const d1ItemContainer: JQuery<HTMLDivElement> = $('#d1ItemContainer')!
 const blurItemInput: JQuery<HTMLInputElement> = $('#blurItemName')!
@@ -52,7 +53,7 @@ const getItemUrl = (itemIDList: string, format: string, locations: string, quali
 const jsonUrl = 'https://raw.githubusercontent.com/ao-data/ao-bin-dumps/master/formatted/items.json'
 
 
-// begin 相關 bluePrints 集合區
+// #region 相關 bluePrints 集合區
 
 enum tierConfig {
     All,
@@ -116,11 +117,11 @@ type imgEleWithSrc = {
 // enum 整合區 (for 選項 html 元素產生器打包用的參數格式)
 const configArr: any[] = [tierConfig, enchantmentConfig, qualityConfig]
 
-// end 相關 bluePrints 集合區
+// #endregion 相關 bluePrints 集合區
 
-// ---------------------全域變數 End------------------------
+// #endregion ---------------------全域變數 End------------------------
 
-// ---------------------各式Function Begin------------------------
+// #region ---------------------各式Function Begin------------------------
 
 // 測試變數(部分不是)(for 組合url字串規則參考)
 const itemID = 'T6_2H_SHAPESHIFTER_MORGANA' //物品唯一名稱
@@ -199,13 +200,8 @@ const priceInitOrRender = (data: any[]) => {
             "scrollX": true,        // 水平滾動時，列也會跟著滾動
         });
     }
-}
 
-// element事件對應function 集合區
-const test = () => {
-    if (detail1.prop('open')) {
-        console.log('open')
-    }
+    detail2.prop('open', true)
 }
 
 /**
@@ -437,16 +433,15 @@ const selectionGenerator = (selectors: JQuery<HTMLSelectElement>[], configs: any
     }
 }
 
-// ---------------------各式Function End------------------------
+// #endregion ---------------------各式Function End------------------------
 
-// ------------------elements 事件註冊區 Begin------------------
+// #region ------------------elements 事件註冊區 Begin------------------
 filter.on('click', filterBaseData)
 priceQuery.on('click', trackPrice)
-detail1.on('toggle', test)
 tierSelector.on('change', filterBaseData)
 enchantmentSelector.on('change', filterBaseData)
 qualitySelector.on('change', () => {})
-// ------------------elements 事件註冊區 End------------------
+// #endregion ------------------elements 事件註冊區 End------------------
 
 /**
  * 渲染器啟動點
