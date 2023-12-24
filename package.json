@@ -24,7 +24,7 @@
     "typescript": "^5.3.3"
   },
   "name": "albion-market-tracker",
-  "version": "0.0.9-test",
+  "version": "1.0.0",
   "description": "Albion Market Tracker",
   "main": "./dist/main.js",
   "keywords": [],
@@ -36,8 +36,7 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "go": "electron .",
-    "pack": "electron-builder",
-    "release": "npm run pack && electron-builder --win --config --publish always"
+    "pack": "electron-builder"
   },
   "repository": "https://github.com/NeatDog857/AlbionMarketTracker.git",
   "build": {

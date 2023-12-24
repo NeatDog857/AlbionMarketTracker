@@ -60,7 +60,7 @@ app.whenReady().then(() => {
 
     if(app.isPackaged) {
         autoUpdater.checkForUpdates()
-        win.webContents.send('some-message', 'Checking for Update')
+        win.webContents.send('update-message', 'Checking for Update')
     }
 
     // #endregion new test for autoUpdater
@@ -73,7 +73,7 @@ app.whenReady().then(() => {
  * 可參考第一行相關網址
  */ 
 
-// begin 主進程(main.ts)與預載腳本(preload.ts)的溝通
+// #region 主進程(main.ts)與預載腳本(preload.ts)的溝通
 
 // ipcMain.on('api-response', async (event, apiUrl) => {
 //     try {
@@ -99,7 +99,7 @@ ipcMain.on('get-app-version', event => {
     event.sender.send('app-version', appVersion)
 })
 
-// end 主進程(main.ts)與預載腳本(preload.ts)的溝通
+// #endregion 主進程(main.ts)與預載腳本(preload.ts)的溝通
 
 //主世界(main + preload)與隔離世界(main + preload 以外 e.g. renderer)的橋樑
 ipcMain.handle('getPrices', async (event, apiUrl): Promise<any> => {
@@ -165,29 +165,29 @@ ipcMain.handle('getIcons', async (event, iconUrlArr: string[]): Promise<string[]
 // #region autoUpdater 事件集中區
 
 autoUpdater.on('update-available', info => {
-    win.webContents.send('some-message', 'Update Available')
+    win.webContents.send('update-message', 'Update Available')
     autoUpdater.downloadUpdate()
 })
 
-autoUpdater.on('update-not-available', info => {
-    win.webContents.send('some-message', 'No Available Update')
+autoUpdater.on('update-not-available', info => 
+    win.webContents.send('update-message', 'No Available Update')
 })
 
 autoUpdater.on('download-progress', info => {
     const integerPart = Math.round(info.percent);
-    win.webContents.send('some-message', integerPart)
+    win.webContents.send('update-message', `Downloading...${integerPart}%`)
 })
 
 autoUpdater.on('update-downloaded', event => {
-    win.webContents.send('some-message', 'Update Downloaded')
+    win.webContents.send('update-message', 'Update Downloaded')
 })
 
 autoUpdater.on('error', info => {
-    win.webContents.send('some-message', info)
+    win.webContents.send('update-message', info)
 })
 
 autoUpdater.on('update-cancelled', info => {
-    win.webContents.send('some-message', info)
+    win.webContents.send('update-message', info)
 })
 
 // #endregion autoUpdater 事件集中區

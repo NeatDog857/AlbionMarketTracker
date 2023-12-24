@@ -23,6 +23,8 @@
       <img id="jelly" alt="JPG Image" src="./image/Snipaste_2023-12-16_03-51-04.jpg">
     </div>
 
+    <div><span id="updateMsg"></span></div>
+
     <div>
       <label for="tierSelector">Tier：</label>
       <select id="tierSelector">
@@ -40,18 +42,16 @@
       <!-- 使用 <details> 和 <summary> 元素實現下拉式展開效果 -->
       <details id="detail1">
         <summary>物品總覽</summary>
+        <p></p>
         <input id="blurItemName" placeholder="模糊搜尋物品名稱"/>
         <button class="button-85" id="filter">Filt</button>
-        <p>這是展開的內容。</p>
         <!-- 物品資料容器 -->
         <div id="d1ItemContainer" class="itemContainer"></div>
       </details>
     </div>
 
-    
-
     <div>
-      <input id="itemName" placeholder="物品名稱"/>
+      <div id="itemImgContainer"></div>
 
       <label for="qualitySelector">Quality：</label>
       <select id="qualitySelector">
@@ -62,18 +62,15 @@
     </div>
 
     <div>
-      <details id="detail1">
+      <details id="detail2">
         <summary>查價結果</summary>
-        <p>這是另一個展開的內容。</p>
-        <div id="d2ItemContainer" class="itemContainer"></div>
+        <p></p>
         <div>
           <table id="priceResultTable" class="hover stripe order-column compact nowrap"></table>
         </div>
       </details>
     </div>
 
-    
-    
     <div id="overlay"></div>
 
   </body>

@@ -33,9 +33,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
 // ipcRenderer.send('some-message', 'Hello Jake')
 
-ipcRenderer.on('some-message', (event, response) => {
-    console.log(response)
-})
+// ipcRenderer.on('some-message', (event, response) => {
+//     console.log(response)
+// })
 
 /**
  * 取版本號的channel
@@ -44,6 +44,13 @@ ipcRenderer.send('get-app-version')
 ipcRenderer.on('app-version', (event, appVersion) => {
     console.log('version: ', appVersion)
     replaceText('app-version', `v${appVersion}`)
+})
+
+/**
+ * 更新資訊
+ */
+ipcRenderer.on('update-message', (event, msg) => {
+    replaceText('updateMsg', msg)
 })
 
 // #endregion 主進程(main.ts)與預載腳本(preload.ts)的溝通

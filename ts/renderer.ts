@@ -4,9 +4,10 @@
  * render = 渲染 
 */
 
-// ---------------------全域變數 Begin------------------------
+// #region ---------------------全域變數 Begin------------------------
 
-const maxResultCount: number = 50
+// 控制篩選筆數最大值
+const maxResultCount: number = 100
 // albion 全物品變數容器
 let baseData: any[]
 // icon src 暫存器 (src 存的是icon API 回傳處理後的 src)
@@ -15,18 +16,19 @@ let imgSrcArr: imgEleWithSrc[]
 let imgItemIDArr: string[] = []
 // elements 存取區
 let priceTable: DataTables.Api = null!
-const filter = document.querySelector<HTMLButtonElement>('#filter')!
-const priceQuery = document.querySelector<HTMLButtonElement>('#priceQuery')!
-const detail1 = document.querySelector<HTMLDetailsElement>('#detail1')!
-const overlay = document.querySelector<HTMLDivElement>('#overlay')!
-const d1ItemContainer = document.querySelector<HTMLDivElement>('#d1ItemContainer')!
-const blurItemInput = document.querySelector<HTMLInputElement>('#blurItemName')!
-const itemInput = document.querySelector<HTMLInputElement>('#itemName')!
-const tierSelector = document.querySelector<HTMLSelectElement>('#tierSelector')!
-const enchantmentSelector = document.querySelector<HTMLSelectElement>('#enchantmentSelector')!
-const qualitySelector = document.querySelector<HTMLSelectElement>('#qualitySelector')!
+const filter: JQuery<HTMLButtonElement> = $('#filter')!
+const priceQuery: JQuery<HTMLButtonElement> = $('#priceQuery')!
+const detail1: JQuery<HTMLDetailsElement> = $('#detail1')!
+const detail2: JQuery<HTMLDetailsElement> = $('#detail2')!
+const overlay: JQuery<HTMLDivElement> = $('#overlay')!
+const d1ItemContainer: JQuery<HTMLDivElement> = $('#d1ItemContainer')!
+const blurItemInput: JQuery<HTMLInputElement> = $('#blurItemName')!
+const imgContainer: JQuery<HTMLDivElement> = $('#itemImgContainer')!
+const tierSelector: JQuery<HTMLSelectElement> = $('#tierSelector')!
+const enchantmentSelector: JQuery<HTMLSelectElement> = $('#enchantmentSelector')!
+const qualitySelector: JQuery<HTMLSelectElement> = $('#qualitySelector')!
 // elements 整合區 (for 選項 html 元素產生器打包用的參數格式)
-const selectorArr: HTMLSelectElement[] = [tierSelector,enchantmentSelector,qualitySelector]
+const selectorArr: JQuery<HTMLSelectElement>[] = [tierSelector, enchantmentSelector, qualitySelector]
 // API 存取區
 const tpAPI = window.trackerPackAPI
 const baseAPI = window.baseDataAPI
@@ -51,7 +53,7 @@ const getItemUrl = (itemIDList: string, format: string, locations: string, quali
 const jsonUrl = 'https://raw.githubusercontent.com/ao-data/ao-bin-dumps/master/formatted/items.json'
 
 
-// begin 相關 bluePrints 集合區
+// #region 相關 bluePrints 集合區
 
 enum tierConfig {
     All,
@@ -67,7 +69,7 @@ enum tierConfig {
 
 enum enchantmentConfig {
     All,
-    dot0 = '',
+    dot0 = '@',
     dot1 = '@1',
     dot2 = '@2',
     dot3 = '@3',
@@ -101,7 +103,7 @@ enum PriceResultTitle {
 }
 
 type selectorPackage = {
-    element: HTMLSelectElement,
+    element: JQuery<HTMLSelectElement>,
     config: any,
 }
 
@@ -115,11 +117,11 @@ type imgEleWithSrc = {
 // enum 整合區 (for 選項 html 元素產生器打包用的參數格式)
 const configArr: any[] = [tierConfig, enchantmentConfig, qualityConfig]
 
-// end 相關 bluePrints 集合區
+// #endregion 相關 bluePrints 集合區
 
-// ---------------------全域變數 End------------------------
+// #endregion ---------------------全域變數 End------------------------
 
-// ---------------------各式Function Begin------------------------
+// #region ---------------------各式Function Begin------------------------
 
 // 測試變數(部分不是)(for 組合url字串規則參考)
 const itemID = 'T6_2H_SHAPESHIFTER_MORGANA' //物品唯一名稱
@@ -128,28 +130,29 @@ const Enchantment = `@4` //附魔
 const qualities = `0` //品質
 const format = 'json'
 
-// 測試查價 T5_HIDE_LEVEL2@2
-// const result: Promise<void> = tpAPI.trackPrices(getItemUrl("T5_HIDE_LEVEL2@2", format))
-
-// result.then(data => {
-//     console.log('from Renderer', data)
-// })
 const trackPrice = () => {
-    const itemID = itemInput.value.trim()
-    const location = 'lymhurst,martlock'
-    const quality = qualitySelector.value
-
-    if (itemID === '') {
-        console.log('請先輸入物品後再查價')
+    // v1.01 這邊先寫成可以支援多樣物品查價的功能
+    if (imgContainer[0].childNodes.length === 0) {
+        console.log('請點選物品後再查價')
         return
     }
+
+    const IDArr: string[] = Array.from(imgContainer[0].childNodes).map(img => {
+        const ID: string = jQuery(img).data('row').UniqueName
+        return ID
+    })
+
+    const itemIDList = IDArr.join(',')
+    const location: string = 'lymhurst,martlock'
+    const quality = String(qualitySelector.val())
+
     //測試每樣查詢條件傳多項(成功)
     // console.log(getItemUrl('T5_CAPEITEM_FW_BRIDGEWATCH@2,T6_2H_SHAPESHIFTER_MORGANA', format, location, '1'))
 
-    const result: Promise<any[]> = tpAPI.trackPrices(getItemUrl(itemID, format, '', quality))
+    const result: Promise<any[]> = tpAPI.trackPrices(getItemUrl(itemIDList, format, '', quality))
 
     result.then(data => {
-        console.log('Price Result: ', data)
+        console.log('Tracking Complete')
         priceInitOrRender(data)
     })
 }
@@ -194,15 +197,11 @@ const priceInitOrRender = (data: any[]) => {
             columns: columns,
             "scrollCollapse": true, // 預設為false 是否開始滾軸功能控制X、Y軸
             "scrollY": "400px",     // 若有設置為Y軸(垂直)最大高度
+            "scrollX": true,        // 水平滾動時，列也會跟著滾動
         });
     }
-}
 
-// element事件對應function 集合區
-const test = () => {
-    if (detail1.open) {
-        console.log('open')
-    }
+    detail2.prop('open', true)
 }
 
 /**
@@ -248,7 +247,6 @@ const imgDealer = async (itemIDArr: string[], quality?: typeof qualityConfig[key
     // -----------end------------
 
     if (tempArr.length !== 0) {
-        console.log('打')
         // 打 icon API
         const result: string[] = await baseAPI.getIcons(tempArr)
         
@@ -275,21 +273,30 @@ const imgDealer = async (itemIDArr: string[], quality?: typeof qualityConfig[key
 
 /**
  * 在filter結果中點選的物品會回傳id到查價input中
+ * v1.01改為直接顯示圖片替代input元件
  * @param event 
  */
 const transferToItemSelector = (event: any) => {
-    
-    let element = event.srcElement
 
-    // 選到圖片時導向其父元素div
-    if (element.localName === 'img')
+    // v1.01
+    const eventEle = event.target
+    let imgEle: JQuery<HTMLImageElement>
+    
+    // 區分元素為 img 還是 span
+    if (eventEle.localName === 'img')
     {
-        element = element.parentElement
+        imgEle = jQuery(eventEle)
+    } else if (eventEle.localName === 'span') {
+        // 因為傳進來的其實是事件，所以再指派參數的時候要重新轉型成jQuery不然編譯成js系統會看不懂
+        imgEle = jQuery(eventEle.firstElementChild)
     }
-    
-    const dataRow = JSON.parse(element.dataset.row)
 
-    itemInput.value = dataRow.UniqueName
+    const cloneEle: JQuery<HTMLImageElement> = imgEle!.clone()
+    const newEleID: string = `trackPrice${imgEle!.attr('id')!}`
+    cloneEle.attr('id', newEleID)
+    // 目前只有開放單一物品查價，故先清除
+    imgContainer.html('')
+    imgContainer.append(cloneEle)
 }
 
 /**
@@ -297,9 +304,9 @@ const transferToItemSelector = (event: any) => {
  */
 const filterBaseData = () => {
     let copyBaseData: any[] = baseData
-    const blurItem: string = blurItemInput.value.trim().toLowerCase()
-    const tier: string = tierSelector.value
-    const enchantment: string = enchantmentSelector.value
+    const blurItem: string = String(blurItemInput.val()).trim().toLowerCase()
+    const tier: string = String(tierSelector.val())
+    const enchantment: string = String(enchantmentSelector.val())
 
     if (blurItem !== '') {
         copyBaseData = copyBaseData.filter(item => item.LocalizedNames['ZH-TW'].includes(blurItem) || item.LocalizedNames['EN-US'].toLowerCase().includes(blurItem))
@@ -310,7 +317,11 @@ const filterBaseData = () => {
     }
 
     if (enchantment !== String(enchantmentConfig.All)) {
-        copyBaseData = copyBaseData.filter(item => item.UniqueName.includes(enchantment))
+        if (enchantment === enchantmentConfig.dot0) {
+            copyBaseData = copyBaseData.filter(item => !item.UniqueName.includes(enchantment))
+        } else {
+            copyBaseData = copyBaseData.filter(item => item.UniqueName.includes(enchantment))
+        }
     }
 
     generateDetails(copyBaseData)
@@ -323,30 +334,59 @@ const filterBaseData = () => {
  * @returns 
  */
 const generateDetails = async (data: any[]) => {
-    // i 控制物品總覽筆數
-    let i = 0
+    // 設定每幾個物品為一列
+    const x: number = 4
 
-    d1ItemContainer.innerHTML = ''
+    const result: any[] = data
 
-    if (data.length === 0) {
-        d1ItemContainer.innerHTML = '查無結果'
+    d1ItemContainer.html('')
 
+    if (result.length === 0) {
+        d1ItemContainer.html('查無結果')
         return
-    } 
+    }
 
-    for (const item of data) {
+    let spanArr: JQuery<HTMLSpanElement>[] = []
+    // i 控制物品總覽筆數
+    let i = 1
+    // r 為 n 個物品存在的 第幾列row
+    let r = 1
 
-        const itemElement = document.createElement('div')
+    for (const item of result) {
+
+        const spanItem: JQuery<HTMLSpanElement> = $('<span></span>')
+        const imgItem: JQuery<HTMLImageElement> = $('<img></img>')
         const jsonToString = JSON.stringify(item)
 
-        itemElement.setAttribute('class', 'items')
-        itemElement.setAttribute('data-row', `${jsonToString}`)
+        imgItem.attr('id', `${item.Index}`)
+        imgItem.attr('alt', 'PNG Image')
+        imgItem.attr('data-row', `${jsonToString}`)
 
-        itemElement.innerHTML = `<img id="${item.Index}" alt="PNG Image">${item.LocalizedNames['ZH-TW']}`
+        spanItem.addClass('items')
+        spanItem.append(imgItem)
+        spanItem.append(`${item.LocalizedNames['ZH-TW']}`)
+        spanItem.on('click', transferToItemSelector)
 
-        itemElement.addEventListener('click', transferToItemSelector)
+        spanArr.push(spanItem)
 
-        d1ItemContainer.appendChild(itemElement)
+        /** 
+         * 每x個物品就把目前為止暫存在 spanArr 中的 span 們存到一個 div 中
+         * 第一個&&判斷是要處理不滿x個的篩選結果處理(否則會顯示不出來)
+        */
+        if ((result.length < x && i % result.length === 0) || i % x === 0) {
+            const divRow: JQuery<HTMLDivElement> = $('<div></div>')
+            divRow.attr('id', `divRow${r}`)
+            divRow.addClass('rows')
+
+            for (const span of spanArr) {
+                divRow.append(span)
+            }
+
+            d1ItemContainer.append(divRow)
+            r++
+            // reset spanArr
+            spanArr = []
+        }
 
         // 把所有此次要渲染的物品真名組成陣列 (為了給icon 數據處理器的參數用)
         imgItemIDArr.push(item.UniqueName)
@@ -365,7 +405,7 @@ const generateDetails = async (data: any[]) => {
 /**
  * 選項 html 元素產生器
  */
-const selectionGenerator = (selectors: HTMLSelectElement[], configs: any[]) => {
+const selectionGenerator = (selectors: JQuery<HTMLSelectElement>[], configs: any[]) => {
 
     let selectorBundle: selectorPackage[] = []
 
@@ -387,29 +427,21 @@ const selectionGenerator = (selectors: HTMLSelectElement[], configs: any[]) => {
             // enchantmentConfig 特殊處理
             if (key.includes('dot')) key = key.substring(3);
     
-            item.element.innerHTML += `
-    <option value="${value}">${key}</option>`
+            item.element.append(`
+    <option value="${value}">${key}</option>`)
         }
     }
 }
 
-// 查詢條件收集器
-const getCondition = () => {
-    console.log(tierSelector.value)
-    console.log(enchantmentSelector.value)
-    console.log(qualitySelector.value)
-}
+// #endregion ---------------------各式Function End------------------------
 
-// ---------------------各式Function End------------------------
-
-// ------------------elements 事件註冊區 Begin------------------
-filter.addEventListener('click', filterBaseData)
-priceQuery.addEventListener('click', trackPrice)
-detail1.addEventListener("toggle", test)
-tierSelector.addEventListener("change", filterBaseData)
-enchantmentSelector.addEventListener("change", filterBaseData)
-qualitySelector.addEventListener("change", () => {})
-// ------------------elements 事件註冊區 End------------------
+// #region ------------------elements 事件註冊區 Begin------------------
+filter.on('click', filterBaseData)
+priceQuery.on('click', trackPrice)
+tierSelector.on('change', filterBaseData)
+enchantmentSelector.on('change', filterBaseData)
+qualitySelector.on('change', () => {})
+// #endregion ------------------elements 事件註冊區 End------------------
 
 /**
  * 渲染器啟動點
@@ -444,12 +476,8 @@ const Start = async () => {
     // 執行一空條件篩選全物品渲染到 detail 中
     await generateDetails(baseData)
 
-    // imgDealer().then(data => {
-    //     $<HTMLImageElement>('#testimg').attr('src', data)
-    // })
-
     // 關閉遮罩
-    overlay.style.display = 'none'
+    overlay.css('display', 'none')
 }
 
 /**
